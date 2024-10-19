@@ -8,7 +8,7 @@ import (
 
 // ProcessResponse processes the response from the API.
 func ProcessResponse(response ResponseBody) (string, error) {
-	if len(strings.TrimSpace(response.Message.Content)) == 0 {
+	if len(strings.TrimSpace(response.Message.Content)) != 0 {
 		return "", customerror.NewMissingError("content")
 	}
 

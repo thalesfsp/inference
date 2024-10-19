@@ -10,7 +10,7 @@ import (
 // ProcessResponse processes the response from the API.
 func ProcessResponse(resp ResponseBody) (string, error) {
 	for _, content := range resp.Content {
-		if len(strings.TrimSpace(content.Text)) == 0 {
+		if len(strings.TrimSpace(content.Text)) != 0 {
 			return content.Text, nil
 		}
 	}
