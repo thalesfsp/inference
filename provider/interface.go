@@ -36,6 +36,14 @@ type IMetrics interface {
 
 // IProvider defines what a provider does.
 type IProvider interface {
+	IMeta
+
+	IMetrics
+
 	// Completion generates a completion using the provider API.
-	Completion(ctx context.Context, v any, options ...Func) error
+	// Optionally pass WithResponseBody to unmarshal the response body.
+	// It will always return the original, unparsed response body, if no error.
+	//
+	// NOTE: Not all options are available for all providers.
+	Completion(ctx context.Context, options ...Func) (string, error)
 }

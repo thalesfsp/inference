@@ -2,6 +2,7 @@ package anthropic
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -43,16 +44,26 @@ type Anthropic struct {
 //////
 
 // Completion generates a completion using the provider API.
+// Optionally pass WithResponseBody to unmarshal the response body.
+// It will always return the original, unparsed response body, if no error.
 //
 // NOTE: Not all options are available for all providers.
-func (p *Anthropic) Completion(ctx context.Context, v any, options ...provider.Func) error {
+func (p *Anthropic) Completion(ctx context.Context, options ...provider.Func) (string, error) {
 	//////
 	// Options initialization.
 	//////
 
+	// Prepend the default model to the options.
+	options = append(
+		[]provider.Func{
+			provider.WithModel(p.DefaultModel),
+		},
+		options...,
+	)
+
 	processedOptions, err := provider.NewOptionsFrom(options...)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	//////
@@ -87,6 +98,9 @@ func (p *Anthropic) Completion(ctx context.Context, v any, options ...provider.F
 	// Call LLM provider.
 	//////
 
+	var respBody ResponseBody
+
+	// Track performance.
 	now := time.Now()
 
 	resp, err := p.client.Post(
@@ -95,15 +109,33 @@ func (p *Anthropic) Completion(ctx context.Context, v any, options ...provider.F
 		httpclient.WithHeader("x-api-key", p.Token),
 		httpclient.WithHeader("anthropic-version", "2023-06-01"),
 		httpclient.WithReqBody(reqBody),
-		httpclient.WithRespBody(v),
+		httpclient.WithRespBody(&respBody),
 	)
 	if err != nil {
 		p.GetCounterCompletionFailed().Add(1)
 
-		return err
+		return "", err
 	}
 
 	defer resp.Body.Close()
+
+	// Response processing.
+	response, err := ProcessResponse(respBody)
+	if err != nil {
+		p.GetCounterCompletionFailed().Add(1)
+
+		return "", err
+	}
+
+	// Optional response body processing.
+	if processedOptions.ResponseBody != nil {
+		if err := json.Unmarshal(
+			[]byte(response),
+			processedOptions.ResponseBody,
+		); err != nil {
+			return "", err
+		}
+	}
 
 	//////
 	// Observability.
@@ -119,7 +151,7 @@ func (p *Anthropic) Completion(ctx context.Context, v any, options ...provider.F
 	// Metrics.
 	p.GetCounterCompletion().Add(1)
 
-	return nil
+	return response, nil
 }
 
 // GetClient returns the client.
@@ -169,11 +201,15 @@ func New(
 }
 
 // NewDefault creates a new Anthropic provider with default values.
-func NewDefault() (*Anthropic, error) {
-	return New(
+func NewDefault(options ...provider.ClientFunc) (*Anthropic, error) {
+	opts := []provider.ClientFunc{
 		provider.WithEndpoint(config.Get().AnthropicEndpoint),
 		provider.WithToken(config.Get().AnthropicToken),
-	)
+	}
+
+	opts = append(opts, options...)
+
+	return New(opts...)
 }
 
 //////

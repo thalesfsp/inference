@@ -23,6 +23,9 @@ type Options struct {
 	// which means no limit.
 	MaxTokens int `json:"maxToken,omitempty" validate:"gte=0"`
 
+	// ResponseBody is the request body.
+	ResponseBody any `json:"requestBody"`
+
 	// Seed the LLM will make a best effort to sample deterministically, such
 	// that repeated requests with the same seed and parameters should return
 	// the same result. Default to not set which means no determinism.
@@ -162,6 +165,17 @@ func WithUserMessages(userMessage ...string) Func {
 		}
 
 		o.UserMessages = append(o.UserMessages, userMessage...)
+
+		return nil
+	}
+}
+
+// WithResponseBody sets the responseBody option.
+func WithResponseBody(requestBody any) Func {
+	return func(o *Options) error {
+		if requestBody != nil {
+			o.ResponseBody = requestBody
+		}
 
 		return nil
 	}

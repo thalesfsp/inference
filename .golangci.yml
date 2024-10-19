@@ -42,3 +42,4 @@ issues:
       linters:
         - containedctx
         - wsl
+        - lll

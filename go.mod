@@ -4,6 +4,7 @@ go 1.23.1
 
 require (
 	github.com/stretchr/testify v1.9.0
+	github.com/thalesfsp/concurrentloop v1.3.2
 	github.com/thalesfsp/configurer v1.3.22
 	github.com/thalesfsp/customerror v1.2.7
 	github.com/thalesfsp/httpclient/v2 v2.0.1
@@ -72,7 +73,6 @@ require (
 	github.com/sourcegraph/jsonrpc2 v0.2.0 // indirect
 	github.com/spf13/cobra v1.8.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/thalesfsp/concurrentloop v1.3.2 // indirect
 	github.com/thalesfsp/godotenv v1.4.2 // indirect
 	github.com/thalesfsp/httpclient v1.2.7 // indirect
 	github.com/thalesfsp/mole v1.0.2 // indirect

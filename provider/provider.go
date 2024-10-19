@@ -2,7 +2,6 @@ package provider
 
 import (
 	"expvar"
-	"fmt"
 
 	"github.com/thalesfsp/inference/internal/metrics"
 	"github.com/thalesfsp/status"
@@ -18,8 +17,7 @@ import (
 // Type is the type of the entity regarding the framework. It is used to for
 // example, to identify the entity in the logs, metrics, and for tracing.
 const (
-	DefaultMetricCounterLabel = "counter"
-	Type                      = "provider"
+	Type = "provider"
 )
 
 // Provider definition.
@@ -36,7 +34,10 @@ type Provider struct {
 
 	// A provider may have the following...
 	// Endpoint to reach the provider.
-	Endpoint string `json:"endpoint,omitempty" validate:"omitempty,lowercase"`
+	Endpoint string `json:"endpoint,omitempty"`
+
+	// DefaultModel default model to be used.
+	DefaultModel string `json:"model,omitempty"`
 
 	// Token to authenticate against the provider.
 	Token string `json:"-"`
@@ -85,8 +86,6 @@ func (s *Provider) GetCounterCompletionFailed() *expvar.Int {
 //////
 
 // New returns a new provider.
-//
-//nolint:lll
 func New(
 	name string,
 	options ...ClientFunc,
@@ -120,15 +119,16 @@ func New(
 		Logger: logger,
 		Name:   name,
 
-		counterCompletion:       metrics.NewInt(fmt.Sprintf("%s.%s.%s.%s", Type, name, status.Counted, DefaultMetricCounterLabel)),
-		counterCompletionFailed: metrics.NewInt(fmt.Sprintf("%s.%s.%s.%s", Type, name, status.Counted+"."+status.Failed, DefaultMetricCounterLabel)),
+		counterCompletion:       metrics.NewIntCounter(Type, name, "completion"),
+		counterCompletionFailed: metrics.NewIntCounter(Type, name, "completion"+"."+status.Failed.String()),
 
 		//////
 		// A provider may have the following...
 		//////
 
-		Endpoint: defaultProviderOptions.Endpoint,
-		Token:    defaultProviderOptions.Token,
+		Endpoint:     defaultProviderOptions.Endpoint,
+		DefaultModel: defaultProviderOptions.Model,
+		Token:        defaultProviderOptions.Token,
 	}
 
 	// Validate the provider.

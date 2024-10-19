@@ -14,43 +14,80 @@ func TestNew(t *testing.T) {
 		t.Skip("skipping test; not running in integration mode")
 	}
 
+	// Model to be used in the test.
+	model := "gpt-4o"
+
+	// CustomResponseBody definition.
+	type CustomResponseBody struct {
+		Response string `json:"response"`
+	}
+
 	type args struct {
 		ctx context.Context
 	}
+
 	tests := []struct {
-		name    string
-		args    args
-		wantErr bool
+		name             string
+		args             args
+		model            string
+		systemMessage    string
+		userMessage      string
+		withResponseBody bool
 	}{
 		{
 			name: "TestNew",
 			args: args{
 				ctx: context.Background(),
 			},
-			wantErr: false,
+			model:         model,
+			systemMessage: "you are a salty pirate",
+			userMessage:   "why is the sky blue",
+		},
+		{
+			name: "TestNew",
+			args: args{
+				ctx: context.Background(),
+			},
+			model:            model,
+			systemMessage:    "you are a salty pirate. You must respond with the following JSON format: {\"response\": string}",
+			userMessage:      "why is the sky blue",
+			withResponseBody: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			o, err := NewDefault()
 			assert.NoError(t, err)
+			assert.NotNil(t, o)
 
-			var respBody ResponseBody
-
-			assert.NoError(t, o.Completion(
-				tt.args.ctx,
-				&respBody,
-				provider.WithModel("gpt-4o"),
-				provider.WithTemperature(0.7),
+			options := []provider.Func{
+				provider.WithModel(tt.model),
+				provider.WithTemperature(1.0),
 				provider.WithTopP(0.9),
-				provider.WithSystemMessages("you are a salty pirate"),
-				provider.WithUserMessages("why is the sky blue"),
-			))
+				provider.WithSystemMessages(tt.systemMessage),
+				provider.WithUserMessages(tt.userMessage),
+			}
 
-			response, err := ProcessResponse(respBody)
-			assert.NoError(t, err)
+			var customResponseBody CustomResponseBody
 
+			if tt.withResponseBody {
+				options = append(
+					options,
+					provider.WithResponseBody(&customResponseBody),
+				)
+			}
+
+			response, err1 := o.Completion(
+				tt.args.ctx,
+				options...,
+			)
+
+			assert.NoError(t, err1)
 			assert.NotEmpty(t, response)
+
+			if tt.withResponseBody {
+				assert.NotEmpty(t, customResponseBody.Response)
+			}
 		})
 	}
 }

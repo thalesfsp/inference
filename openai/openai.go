@@ -2,6 +2,7 @@ package openai
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -43,16 +44,26 @@ type OpenAI struct {
 //////
 
 // Completion generates a completion using the provider API.
+// Optionally pass WithResponseBody to unmarshal the response body.
+// It will always return the original, unparsed response body, if no error.
 //
 // NOTE: Not all options are available for all providers.
-func (p *OpenAI) Completion(ctx context.Context, v any, options ...provider.Func) error {
+func (p *OpenAI) Completion(ctx context.Context, options ...provider.Func) (string, error) {
 	//////
 	// Options initialization.
 	//////
 
+	// Prepend the default model to the options.
+	options = append(
+		[]provider.Func{
+			provider.WithModel(p.DefaultModel),
+		},
+		options...,
+	)
+
 	processedOptions, err := provider.NewOptionsFrom(options...)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	//////
@@ -83,6 +94,9 @@ func (p *OpenAI) Completion(ctx context.Context, v any, options ...provider.Func
 	// Call LLM provider.
 	//////
 
+	var respBody ResponseBody
+
+	// Track performance.
 	now := time.Now()
 
 	resp, err := p.client.Post(
@@ -90,15 +104,33 @@ func (p *OpenAI) Completion(ctx context.Context, v any, options ...provider.Func
 		p.Endpoint,
 		httpclient.WithBearerAuthToken(p.Token),
 		httpclient.WithReqBody(reqBody),
-		httpclient.WithRespBody(v),
+		httpclient.WithRespBody(&respBody),
 	)
 	if err != nil {
 		p.GetCounterCompletionFailed().Add(1)
 
-		return err
+		return "", err
 	}
 
 	defer resp.Body.Close()
+
+	// Response processing.
+	response, err := ProcessResponse(respBody)
+	if err != nil {
+		p.GetCounterCompletionFailed().Add(1)
+
+		return "", err
+	}
+
+	// Optional response body processing.
+	if processedOptions.ResponseBody != nil {
+		if err := json.Unmarshal(
+			[]byte(response),
+			processedOptions.ResponseBody,
+		); err != nil {
+			return "", err
+		}
+	}
 
 	//////
 	// Observability.
@@ -114,7 +146,7 @@ func (p *OpenAI) Completion(ctx context.Context, v any, options ...provider.Func
 	// Metrics.
 	p.GetCounterCompletion().Add(1)
 
-	return nil
+	return response, nil
 }
 
 // GetClient returns the client.
@@ -164,11 +196,15 @@ func New(
 }
 
 // NewDefault creates a new OpenAI provider with default values.
-func NewDefault() (*OpenAI, error) {
-	return New(
+func NewDefault(options ...provider.ClientFunc) (*OpenAI, error) {
+	opts := []provider.ClientFunc{
 		provider.WithEndpoint(config.Get().OpenAIEndpoint),
 		provider.WithToken(config.Get().OpenAIToken),
-	)
+	}
+
+	opts = append(opts, options...)
+
+	return New(opts...)
 }
 
 //////
