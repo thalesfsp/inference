@@ -52,10 +52,12 @@ func TestCompletionMany(t *testing.T) {
 				provider.WithUserMessages("why is the sky blue"),
 			}
 
-			response, err := provider.CompletionMany(context.Background(), map[string]provider.IProvider{
+			m := provider.Map{
 				"openai":    o,
 				"anthropic": a,
-			}, options...)
+			}
+
+			response, err := m.Completion(context.Background(), options...)
 			assert.NoError(t, err)
 
 			assert.NotEmpty(t, response[openai.Name])

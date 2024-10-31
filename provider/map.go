@@ -54,9 +54,8 @@ func (m Map) ToSlice() []IProvider {
 
 // CompletionMany calls the Completion concurrently against all providers in the
 // map. The response is mapped to the provider name.
-func CompletionMany(
+func (m Map) Completion(
 	ctx context.Context,
-	m Map,
 	options ...Func,
 ) (map[string]string, error) {
 	responseMap := make(map[string]string)
