@@ -55,9 +55,9 @@ func TestNew(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			o, err := NewDefault()
+			a, err := NewDefault()
 			assert.NoError(t, err)
-			assert.NotNil(t, o)
+			assert.NotNil(t, a)
 
 			options := []provider.Func{
 				provider.WithModel(tt.model),
@@ -77,7 +77,7 @@ func TestNew(t *testing.T) {
 				)
 			}
 
-			response, err1 := o.Completion(
+			response, err1 := a.Completion(
 				tt.args.ctx,
 				options...,
 			)
