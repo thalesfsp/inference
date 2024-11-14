@@ -36,7 +36,7 @@ type Config struct {
 
 	// HuggingFace.
 	HuggingFaceEndpoint string `default:"https://api-inference.huggingface.co/v1/chat/completions" env:"HUGGINGFACE_ENDPOINT" json:"huggingFaceBaseURL" validate:"omitempty,gt=0"`
-	HuggingFaceToken    string `env:"HUGGINGFACE_API_KEY"                                              json:"-"                  validate:"omitempty,gt=0"`
+	HuggingFaceToken    string `env:"HUGGINGFACE_API_KEY"                                          json:"-"                   validate:"omitempty,gt=0"`
 
 	// OpenAI.
 	OpenAIEndpoint string `default:"https://api.openai.com/v1/chat/completions" env:"OPEN_AI_ENDPOINT" json:"openAIBaseURL"      validate:"omitempty,gt=0"`
