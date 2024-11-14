@@ -30,8 +30,13 @@ type Config struct {
 	// NOTE: For integration testing, set `environment` to `integration`.
 	Environment string `default:"testing" env:"ENVIRONMENT" json:"environment" validate:"required,oneof=testing integration"`
 
+	// Anthropic.
 	AnthropicEndpoint string `default:"https://api.anthropic.com/v1/messages" env:"ANTHROPIC_ENDPOINT" json:"anthropicBaseURL"   validate:"omitempty,gt=0"`
 	AnthropicToken    string `env:"ANTHROPIC_API_KEY"                         json:"-"                 validate:"omitempty,gt=0"`
+
+	// HuggingFace.
+	HuggingFaceEndpoint string `default:"https://api-inference.huggingface.co/v1/chat/completions" env:"HUGGINGFACE_ENDPOINT" json:"huggingFaceBaseURL" validate:"omitempty,gt=0"`
+	HuggingFaceToken    string `env:"HUGGINGFACE_API_KEY"                                              json:"-"                  validate:"omitempty,gt=0"`
 
 	// OpenAI.
 	OpenAIEndpoint string `default:"https://api.openai.com/v1/chat/completions" env:"OPEN_AI_ENDPOINT" json:"openAIBaseURL"      validate:"omitempty,gt=0"`
