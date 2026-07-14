@@ -9,9 +9,10 @@ require (
 	github.com/thalesfsp/customerror v1.2.7
 	github.com/thalesfsp/httpclient/v2 v2.0.1
 	github.com/thalesfsp/status v1.0.18
-	github.com/thalesfsp/sypl v1.9.18
 	github.com/thalesfsp/validation v0.0.3
 )
+
+require github.com/thalesfsp/sypl v1.9.18 // indirect
 
 require (
 	github.com/BurntSushi/toml v1.4.0 // indirect
@@ -29,7 +30,7 @@ require (
 	github.com/elastic/go-sysinfo v1.14.2 // indirect
 	github.com/elastic/go-windows v1.0.2 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
-	github.com/fatih/color v1.17.0 // indirect
+	github.com/fatih/color v1.18.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.6 // indirect
 	github.com/go-jose/go-jose/v4 v4.0.4 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
@@ -77,6 +78,7 @@ require (
 	github.com/thalesfsp/httpclient v1.2.7 // indirect
 	github.com/thalesfsp/mole v1.0.2 // indirect
 	github.com/thalesfsp/randomness v0.0.9 // indirect
+	github.com/thalesfsp/sypl/v2 v2.0.0
 	go.elastic.co/apm v1.15.0 // indirect
 	go.elastic.co/fastjson v1.4.0 // indirect
 	go.opentelemetry.io/otel v1.31.0 // indirect
@@ -87,7 +89,7 @@ require (
 	golang.org/x/mod v0.21.0 // indirect
 	golang.org/x/net v0.30.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
-	golang.org/x/sys v0.26.0 // indirect
+	golang.org/x/sys v0.27.0 // indirect
 	golang.org/x/term v0.25.0 // indirect
 	golang.org/x/text v0.19.0 // indirect
 	golang.org/x/time v0.7.0 // indirect
