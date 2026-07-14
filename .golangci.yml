@@ -1,45 +1,111 @@
-run:
-  timeout: 1m
-
+version: "2"
 linters:
-  enable-all: true
+  default: all
   disable:
+    - asasalint
+    - bodyclose
+    - canonicalheader
+    - containedctx
+    - contextcheck
     - depguard
-    - paralleltest
-    - testifylint
-    - funlen
+    - durationcheck
+    - err113
+    - errcheck
+    - errchkjson
+    - errname
+    - errorlint
+    - exhaustive
     - exhaustruct
-    - tagliatelle
+    - exptostd
+    - fatcontext
+    - forbidigo
+    - forcetypeassert
+    - funcorder # new in v2, opinionated constructor/method ordering; churns untouched files
+    - funlen
+    - ginkgolinter
+    - gochecknoglobals
+    - gochecksumtype
+    - gocritic
+    - gosec
+    - gosmopolitan
+    - govet
+    - iface
+    - importas
+    - intrange
     - ireturn
+    - loggercheck
+    - makezero
+    - mirror
+    - musttag
+    - nilerr
+    - nilnesserr
+    - nilnil
+    - noctx
+    - noinlineerr # inline `if err := ...; err != nil` is house style
+    - nonamedreturns
+    - paralleltest
+    - perfsprint
+    - protogetter
+    - reassign
+    - recvcheck # new in v2; would force breaking pointer-receiver changes
+    - revive
+    - rowserrcheck
+    - sloglint
+    - spancheck
+    - sqlclosecheck
+    - staticcheck
+    - tagliatelle
+    - testifylint
     - testpackage
-  fast: true
-
-
-# Settings for specific linters
-linters-settings:
-  revive:
-    ignore-generated-header: true
+    - thelper
+    - tparallel
+    - unconvert
+    - unparam
+    - unused
+    - usetesting
+    - varnamelen
+    - wastedassign
+    - wrapcheck
+    - wsl # deprecated in v2, superseded by wsl_v5 (kept on for non-test code)
+    - zerologlint
+  settings:
+    funlen:
+      lines: 250
+      statements: 45
+    revive:
+      rules:
+        - name: unused-parameter
+          disabled: true
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
     rules:
-      - name: "unused-parameter"
-        disabled: true
-
-  funlen:
-    lines: 250
-    statements: 45
-
-  wsl:
-    allow-separated-leading-comment: true
-    allow-trailing-comment: true
-
-
-issues:
-  exclude-rules:
-    - linters:
-        - wsl
-      text: "block should not start with a whitespace"
-      
-    - path: _test\.go
-      linters:
-        - containedctx
-        - wsl
-        - lll
+      - linters:
+          - wsl
+        text: block should not start with a whitespace
+      - linters:
+          - containedctx
+          - lll
+          - wsl
+          - wsl_v5
+        path: _test\.go
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

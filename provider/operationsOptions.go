@@ -187,7 +187,7 @@ func WithResponseBody(requestBody any) Func {
 
 // NewOptionsFrom process, and validate against the default options.
 //
-//nolint:mnd,gomnd
+//nolint:mnd
 func NewOptionsFrom(options ...Func) (*Options, error) {
 	defaultOptions := Options{
 		MaxTokens:   4096,
