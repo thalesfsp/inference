@@ -52,8 +52,8 @@ func (m Map) ToSlice() []IProvider {
 // 1:N Operations.
 //////
 
-// CompletionMany calls the Completion concurrently against all providers in the
-// map. The response is mapped to the provider name.
+// Completion calls the providers' Completion concurrently against all providers
+// in the map. The response is mapped to the provider name.
 func (m Map) Completion(
 	ctx context.Context,
 	options ...Func,

@@ -1,4 +1,3 @@
-// huggingface/huggingface.go
 package huggingface
 
 import (

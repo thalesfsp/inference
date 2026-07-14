@@ -93,7 +93,6 @@ func New(
 	//////
 	// Provider options processing.
 	//////
-
 	defaultProviderOptions := ClientOptions{}
 
 	// Apply options against the default options.
